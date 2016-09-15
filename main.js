@@ -123,22 +123,25 @@ function renderFeedbackform() {
 	}
 }
 
-function submitFeedback() {
+function submitFeedback(event) {
+    event.preventDefault();
   	var feedback = {}; // the final feedback object
 
   	feedback.lab_name = sampleData.lab_name;
   	feedback.exp_name = sampleData.exp_name;
   	feedback.questions = []; // the list of questions and user answers
-	var quesArray = sampleData.questions.length;
+	  var quesArray = sampleData.questions.length;
 
     // loop over the questions
 	for (var i = 0; i < quesArray; i++) {
     // getByElementId using the question name - this is our answer div
-	    var questionElement = document.getElementById(sampleData.questions[i].name);
-	    var answer = null;
+	  var questionElement = document.getElementById(sampleData.questions[i].name);
+	  var answer = null;
 		if(sampleData.questions[i].type === 'radioButton') {
-	  		for(var j = 0; j < questionElement.children.length; j++) {
-	    		var child = questionElement.children[j];
+      var children = questionElement.querySelectorAll('input');
+	  		for(var j = 0; j < children.length; j++) {
+	    		var child = children[j];
+          console.log('child', child, child.type, child.checked);
 	    		if(child.type === 'radio' && child.checked === true) {
 	      			console.log('selected', child.value);
 	      			answer = child.value;
@@ -147,26 +150,31 @@ function submitFeedback() {
 		}
 		else if(sampleData.questions[i].type === 'checkBox') {
 	    	answer = [];
-	    	for(var j = 0; j < questionElement.children.length; j++) {
-	        var child = questionElement.children[j];
+        var children = questionElement.querySelectorAll('input');
+	    	for(var j = 0; j < children.length; j++) {
+	        var child = children[j];
 	        if(child.checked === true) {
 	          console.log('selected', child.value);
 	          answer.push(child.value);
 	        }
 	      }
-	    }
+	  }
 		else if(sampleData.questions[i].type === 'textBox') {
 	      	var input = questionElement;
-	    	answer = input.value;
-	    }
+	    	  answer = input.value;
+	  }
+	  else if(sampleData.questions[i].type === 'textArea') {
+	      	var input = questionElement;
+	    	  answer = input.value;
+	  }
 	    // create an object to insert the current question data
-	    var question = {};
-	    question.name = sampleData.questions[i].name;
-	    question.type = sampleData.questions[i].type;
-	    question.answer = answer;
-	    feedback.questions.push(question);
-	}
-	console.log(feedback); // the final object
-	console.log("Submitted feedback");
-	// console.log("Submitted feedback");
+	  var question = {};
+	  question.name = sampleData.questions[i].name;
+	  question.type = sampleData.questions[i].type;
+	  question.answer = answer;
+	  feedback.questions.push(question);
+	  }
+	  console.log(feedback); // the final object
+	  console.log("Submitted feedback");
+	  // console.log("Submitted feedback");
 }
